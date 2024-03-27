@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <regex.h>
+
+// Function to check if a string matches a regular expression pattern
+int match(const char *string, const char *pattern) {
+    regex_t regex;
+    if (regcomp(&regex, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
+        return 0; // Compilation failed
+    }
+    int status = regexec(&regex, string, 0, NULL, 0);
+    regfree(&regex);
+    if (status == 0) {
+        return 1; // Match found
+    }
+    return 0; // No match found
+}
+
+int main() {
+    const char *patterns[] = {"a", "a*", "a*b+", "a*bb"};
+    const char *strings[] = {"a", "aaab", "aab", "aaab", "aabb"};
+
+    for (int i = 0; i < sizeof(strings) / sizeof(strings[0]); ++i) {
+        printf("String \"%s\" matches:\n", strings[i]);
+        for (int j = 0; j < sizeof(patterns) / sizeof(patterns[0]); ++j) {
+            if (match(strings[i], patterns[j])) {
+                printf("  Pattern \"%s\"\n", patterns[j]);
+            }
+        }
+    }
+
+    return 0;
+}
